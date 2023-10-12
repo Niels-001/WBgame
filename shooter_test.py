@@ -14,7 +14,7 @@ ENEMY_SIZE = 30
 BULLET_SIZE = 5
 PLAYER_SPEED = 2
 ENEMY_SPEED = 1
-BULLET_SPEED = 20
+BULLET_SPEED = 5
 ENEMY_COUNT = 9
 
 SCORE_COUNT = 0
@@ -54,35 +54,31 @@ while running:
     player_speed_y = 0
     # Player movement
     if keys[pygame.K_a] and player.x >= 0:
-        player_speed_x = -PLAYER_SPEED
-        #player_speed_y = 0
-        bullet_angle = math.pi
         if keys[pygame.K_d]:
             player_speed_x = 0
-            bullet_angle = 1.5 * math.pi
+            bullet_angle = 0.5 * math.pi
+        else:
+            player_speed_x = -PLAYER_SPEED
+            bullet_angle = math.pi
 
-    if keys[pygame.K_d] and player.x <= WIDTH:
-        player_speed_x = PLAYER_SPEED
-        #player_speed_y = 0
-        bullet_angle = 0 * math.pi
+    if keys[pygame.K_d] and player.x <= WIDTH-PLAYER_SIZE:
         if keys[pygame.K_a]:
             player_speed_x = 0
-            bullet_angle = 1.5 * math.pi
+            bullet_angle = 0.5 * math.pi
+        else:
+            player_speed_x = PLAYER_SPEED
+            bullet_angle = 0
 
     if keys[pygame.K_w] and player.y >= 0:
-        #player_speed_x = 0
         player_speed_y = -PLAYER_SPEED
         bullet_angle = 1.5 * math.pi
-        if keys[pygame.K_s]:
-            player_speed_y = 0
 
-    if keys[pygame.K_s] and player.y <= HEIGHT-20:
-        #player_speed_x = 0
-        player_speed_y = PLAYER_SPEED
-        bullet_angle = 0.5 * math.pi
+    if keys[pygame.K_s] and player.y <= HEIGHT-PLAYER_SIZE:
         if keys[pygame.K_w]:
             player_speed_y = 0
-
+        else:
+            player_speed_y = PLAYER_SPEED
+            bullet_angle = 0.5 * math.pi
 
     # Shooting (only one bullet at a time)
     if keys[pygame.K_SPACE] and len(bullets) == 0:
@@ -109,8 +105,8 @@ while running:
 
     # Move bullets
     for bullet in bullets:
-        bullet.x += bullet_velocity_x
-        bullet.y += bullet_velocity_y
+        bullet.x += BULLET_SPEED * math.cos(bullet_angle)
+        bullet.y += BULLET_SPEED * math.sin(bullet_angle)
 
     # Remove bullets that are off-screen
     bullets = [bullet for bullet in bullets if bullet.colliderect(pygame.Rect(0, 0, WIDTH, HEIGHT))]
@@ -121,7 +117,7 @@ while running:
             if enemy.colliderect(bullet):
                 SCORE_COUNT += 1
                 enemies.remove(enemy)
-                bullets.remove(bullet)
+                # bullets.remove(bullet)
                 enemy.y = random.randint(-100, -ENEMY_SIZE)
                 enemy.x = random.randint(0, WIDTH - ENEMY_SIZE)
                 enemies.append(pygame.Rect(random.randint(0, WIDTH - ENEMY_SIZE), -20, ENEMY_SIZE, ENEMY_SIZE))
