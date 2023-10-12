@@ -17,13 +17,15 @@ ENEMY_SPEED = 1
 BULLET_SPEED = 20
 ENEMY_COUNT = 9
 
+SCORE_COUNT = 0
+
 # Colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 # Create the screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Top-Down Shooter")
+pygame.display.set_caption("Top-Down")
 
 # Player setup
 player = pygame.Rect(WIDTH // 2 - PLAYER_SIZE // 2, HEIGHT - PLAYER_SIZE, PLAYER_SIZE, PLAYER_SIZE)
@@ -117,6 +119,7 @@ while running:
     for enemy in enemies:
         for bullet in bullets:
             if enemy.colliderect(bullet):
+                SCORE_COUNT += 1
                 enemies.remove(enemy)
                 bullets.remove(bullet)
                 enemy.y = random.randint(-100, -ENEMY_SIZE)
