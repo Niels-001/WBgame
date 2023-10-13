@@ -169,6 +169,7 @@ import sys
 import random
 import math
 import time
+import numpy as np
 
 # Initialize Pygame
 pygame.init()
@@ -298,14 +299,14 @@ while running:
     # Draw everything
     screen.fill(WHITE)
     pygame.draw.rect(screen, RED, player)
-    # for obstacle in colliders:
-    #     pygame.draw.rect(screen, BLACK, obstacle)
     for enemy in enemies:
         pygame.draw.rect(screen, RED, enemy)
     for bullet in bullets:
         pygame.draw.rect(screen, RED, bullet)
 
     pygame.display.update()
+
+obstacles = []
 
 # Quit the game
 pygame.quit()
