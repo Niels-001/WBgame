@@ -25,10 +25,16 @@ pygame.display.set_caption("BoxHead")
 Characters = pygame.sprite.Group()
 
 #create square and add to squares group
-player_1 = Ob.Character("Blue", 500, 300)
-player_2 = Ob.Character("Red", 300, 300)
+player_1 = Ob.Character("Blue", 500, 300, 1)
+player_2 = Ob.Character("Red", 300, 300, 2)
 
-Characters.add(player_1, player_2)
+NPC_1 = Ob.Character('Black', player = 0)
+NPC_2 = Ob.Character('Black', player = 0)
+NPC_3 = Ob.Character('Black', player = 0)
+NPC_4 = Ob.Character('Black', player = 0)
+NPC_5 = Ob.Character('Black', player = 0)
+
+Characters.add(player_1, player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
 
 
 '''GAME Loop
@@ -48,43 +54,9 @@ while run:
     '''
     key = pygame.key.get_pressed()
     #movement controls player 1
-    # 4 keys pressed
-    # print(key[pygame.K_a], key[pygame.K_d], key[pygame.K_w], key[pygame.K_s])
-
-    if key[pygame.K_a] * key[pygame.K_d] * key[pygame.K_w] * key[pygame.K_s] :
-        player_1.move(0,0)
-    # 3 keys pressed
-    elif key[pygame.K_a] * key[pygame.K_d] * key[pygame.K_w] :
-        player_1.move(0,-1)
-    elif key[pygame.K_a] * key[pygame.K_d] * key[pygame.K_s] :
-        player_1.move(0, 1)
-    elif key[pygame.K_a] * key[pygame.K_w] * key[pygame.K_s] :
-        player_1.move(-1, 0)
-    elif key[pygame.K_d] * key[pygame.K_w] * key[pygame.K_s] :
-        player_1.move(1, 0)
-    # 2 keys pressed
-    elif key[pygame.K_a] and key[pygame.K_w]:
-        player_1.move(-1, -1)
-    elif key[pygame.K_a] * key[pygame.K_d] :
-        player_1.move(0, 0)
-    elif key[pygame.K_a] * key[pygame.K_s] :
-        player_1.move(-1, 1)
-    elif key[pygame.K_d] * key[pygame.K_w] :
-        player_1.move(1, -1)
-    elif key[pygame.K_d] * key[pygame.K_s] :
-        player_1.move(1, 1)
-    elif key[pygame.K_w] * key[pygame.K_s] :
-        player_1.move(0, 0)
-    # 1 key pressed
-    elif key[pygame.K_a] :
-        player_1.move(-1, 0)
-    elif key[pygame.K_d] :
-        player_1.move(1, 0)
-    elif key[pygame.K_w] :
-        player_1.move(0, -1)
-    elif key[pygame.K_s]:
-        player_1.move(0, 1)
-
+    player_1.update_move(key)
+    #movement controls player 2
+    player_2.update_move(key)
 
 
     '''GAME menu & quit'''
