@@ -4,6 +4,7 @@ import random
 
 npc_speed = 0.25
 
+
 class Character(pygame.sprite.Sprite):
     def __init__(self, col, x=0, y=0, player=0, size=30):
         if player == 0:
@@ -35,7 +36,12 @@ class Character(pygame.sprite.Sprite):
         for that NPC to move in """
 
     def direction_closest_player(self, pl1, pl2):
+        """
 
+        :param pl1:
+        :param pl2:
+        :return:
+        """
         dir1 = [pl1.rect.center[0] - self.rect.center[0], pl1.rect.center[1] - self.rect.center[1]]
         dir2 = [pl2.rect.center[0] - self.rect.center[0], pl2.rect.center[1] - self.rect.center[1]]
 
@@ -45,15 +51,13 @@ class Character(pygame.sprite.Sprite):
         ''' If player 1 is closer, return the direction from the NPC to that player. If either of the distances is 
             equal to zero, the direction will be zero in both direction, i.e. standing still'''
         if dist1 != 0 and dist2 != 0:
-            if dist1 < dist2:
-                direction = [dir1[0] / dist1, dir1[1] / dist1]
+            if dist1 <= dist2:
+                return [dir1[0] / dist1, dir1[1] / dist1]
             # If player 2 is closer, return the direction from the NPC to that player
             elif dist2 < dist1:
-                direction = [dir2[0] / dist2, dir2[1] / dist2]
+                return [dir2[0] / dist2, dir2[1] / dist2]
         else:
-            direction = [0, 0]
-
-        return direction
+            return [0, 0]
 
     """This function moves the character in a Direction with x and y components according to the movement speed
             of the character."""
@@ -83,8 +87,8 @@ class Character(pygame.sprite.Sprite):
     '''This function gives a direction for any character, based on the keys being pressed'''
 
     def player_movement(self, key) -> None:
-
         """
+
         :param self:
         :param key:
         """
@@ -125,4 +129,4 @@ class Character(pygame.sprite.Sprite):
             self.move(0, 1)
 
     def npc_movement(self, dir):
-        self.move(dir[0]*npc_speed, dir[1]*npc_speed)
+        self.move(dir[0] * npc_speed, dir[1] * npc_speed)
