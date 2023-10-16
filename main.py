@@ -47,11 +47,21 @@ while run:
     '''Game event handler'''
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
-    player_1.update_move(key)       # Movement controls for player 1
+    '''Update the positions of both players'''
+    player_1.player_movement(key)
+    player_2.player_movement(key)
 
-    player_2.update_move(key)       # Movement controls for player 2
+    '''Update the positions of all NPC'sa'''
+    NPC_1.npc_movement(NPC_1.direction_closest_player(player_1, player_2))
+    NPC_2.npc_movement(NPC_2.direction_closest_player(player_1, player_2))
+    NPC_3.npc_movement(NPC_3.direction_closest_player(player_1, player_2))
+    NPC_4.npc_movement(NPC_4.direction_closest_player(player_1, player_2))
+    NPC_5.npc_movement(NPC_5.direction_closest_player(player_1, player_2))
 
-    '''Making the program quit when the user closes the application'''
+    '''Test for the directional vector from NPC_1 to the closest player character'''
+    # print(NPC_1.direction_closest_player(player_1, player_2))
+
+    '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -59,4 +69,5 @@ while run:
     '''Updating the screen (every frame)'''
     pygame.display.update()
 
+'''Quits the pygame module when the program has finished; after the game loop has stopped'''
 pygame.quit()
