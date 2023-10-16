@@ -2,8 +2,6 @@ import pygame
 import math
 import random
 
-npc_speed = 0.25
-
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, col, x=0, y=0, player=0, size=30):
@@ -53,7 +51,7 @@ class Character(pygame.sprite.Sprite):
         dist2 = math.sqrt(diff2[0] ** 2 + diff2[1] ** 2)
 
         ''' If player 1 is closer, return the direction from the NPC to that player. If either of the distances is 
-            equal to zero, the direction will be zero in both direction, i.e. standing still'''
+                equal to zero, the direction will be zero in both directions, i.e. standing still'''
         if dist1 != 0 and dist2 != 0:
             if dist1 <= dist2:
                 return [diff1[0] / dist1, diff1[1] / dist1]
@@ -64,7 +62,7 @@ class Character(pygame.sprite.Sprite):
             return [0, 0]
 
     """This function moves the character in a Direction with x and y components according to the movement speed
-            of the character."""
+            of the character"""
 
     def move(self, x, y):
 
@@ -92,15 +90,10 @@ class Character(pygame.sprite.Sprite):
             else:
                 self.rect.move_ip(x * self.ms * math.sqrt(2), y * self.ms * math.sqrt(2))
         else:
-            self.rect.move_ip(x, y)
+            self.rect.move(x, y)
 
     '''This function gives a direction for any character, based on the keys being pressed'''
     def player_movement(self, key) -> None:
-        """
-
-        :param self:
-        :param key:
-        """
 
         # 4 keys pressed
         if key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:

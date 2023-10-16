@@ -8,7 +8,7 @@ pygame.init()
 
 '''Setting up the framerate'''
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 1
 
 '''Setting up the game window'''
 SCREEN_WIDTH = 800
@@ -25,11 +25,11 @@ player_1 = Ob.Character("Blue", 300, 300, 1)
 player_2 = Ob.Character("Red", 500, 300, 2)
 
 '''Creating the NPC objects'''
-NPC_1 = Ob.Character('Black', player=0)
-NPC_2 = Ob.Character('Black', player=0)
-NPC_3 = Ob.Character('Black', player=0)
-NPC_4 = Ob.Character('Black', player=0)
-NPC_5 = Ob.Character('Black', player=0)
+NPC_1 = Ob.Character((0,0,0), player=0)
+NPC_2 = Ob.Character((50,50,50), player=0)
+NPC_3 = Ob.Character((100,100,100), player=0)
+NPC_4 = Ob.Character((150,150,150), player=0)
+NPC_5 = Ob.Character((200,200,200), player=0)
 
 '''Adding the players and NPC's to the characters list'''
 Characters.add(player_1, player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
@@ -51,12 +51,18 @@ while run:
     player_1.player_movement(key)
     player_2.player_movement(key)
 
-    '''Update the positions of all NPC'sa'''
+    '''Update the positions of all NPC's'''
     NPC_1.npc_movement(NPC_1.direction_closest_player(player_1, player_2))
+    print(NPC_1.direction_closest_player(player_1, player_2))
     NPC_2.npc_movement(NPC_2.direction_closest_player(player_1, player_2))
+    print(NPC_2.direction_closest_player(player_1, player_2))
     NPC_3.npc_movement(NPC_3.direction_closest_player(player_1, player_2))
+    print(NPC_3.direction_closest_player(player_1, player_2))
     NPC_4.npc_movement(NPC_4.direction_closest_player(player_1, player_2))
+    print(NPC_4.direction_closest_player(player_1, player_2))
     NPC_5.npc_movement(NPC_5.direction_closest_player(player_1, player_2))
+    print(NPC_5.direction_closest_player(player_1, player_2))
+    print("\n")
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
