@@ -14,7 +14,7 @@ ENEMY_SIZE = 30
 BULLET_SIZE = 5
 PLAYER_SPEED = 2
 ENEMY_SPEED = 1
-BULLET_SPEED = 5
+BULLET_SPEED = 20
 ENEMY_COUNT = 9
 
 SCORE_COUNT = 0
@@ -117,7 +117,7 @@ while running:
             if enemy.colliderect(bullet):
                 SCORE_COUNT += 1
                 enemies.remove(enemy)
-                # bullets.remove(bullet)
+                bullets.remove(bullet)
                 enemy.y = random.randint(-100, -ENEMY_SIZE)
                 enemy.x = random.randint(0, WIDTH - ENEMY_SIZE)
                 enemies.append(pygame.Rect(random.randint(0, WIDTH - ENEMY_SIZE), -20, ENEMY_SIZE, ENEMY_SIZE))
