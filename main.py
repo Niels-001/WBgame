@@ -58,9 +58,6 @@ while run:
     NPC_4.npc_movement(NPC_4.direction_closest_player(player_1, player_2))
     NPC_5.npc_movement(NPC_5.direction_closest_player(player_1, player_2))
 
-    '''Test for the directional vector from NPC_1 to the closest player character'''
-    # print(NPC_1.direction_closest_player(player_1, player_2))
-
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
