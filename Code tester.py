@@ -310,3 +310,27 @@ obstacles = []
 
 # Quit the game
 pygame.quit()
+
+# def direction_closest_player(self, pl1, pl2):
+    #     """
+    #
+    #     :param pl1:
+    #     :param pl2:
+    #     :return:
+    #     """
+    #     diff1 = [pl1.rect.center[0] - self.rect.center[0], pl1.rect.center[1] - self.rect.center[1]]
+    #     diff2 = [pl2.rect.center[0] - self.rect.center[0], pl2.rect.center[1] - self.rect.center[1]]
+    #
+    #     dist1 = math.sqrt(diff1[0] ** 2 + diff1[1] ** 2)
+    #     dist2 = math.sqrt(diff2[0] ** 2 + diff2[1] ** 2)
+    #
+    #     ''' If player 1 is closer, return the direction from the NPC to that player. If either of the distances is
+    #             equal to zero, the direction will be zero in both directions, i.e. standing still'''
+    #     if dist1 != 0 and dist2 != 0:
+    #         if dist1 <= dist2:
+    #             return [diff1[0] / dist1, diff1[1] / dist1]
+    #         # If player 2 is closer, return the direction from the NPC to that player
+    #         elif dist2 < dist1:
+    #             return [diff2[0] / dist2, diff2[1] / dist2]
+    #     else:
+    #         return [0, 0]

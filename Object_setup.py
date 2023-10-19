@@ -3,10 +3,11 @@ import math
 import random
 import typing
 
-
+'''THe Character class, creates objects for all characters Player and Non-player.
+all characters get self.variables like movement speed, health location and size.
+And they all get functions to move, and attack.'''
 class Character(pygame.sprite.Sprite):
     def __init__(self, col, x=0, y=0, player=0, size=30):
-
         """
         :param col:
         :param x:
@@ -34,6 +35,7 @@ class Character(pygame.sprite.Sprite):
         self.image.fill(col)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.weapons = list()
 
     """ This function checks which player is closer to the NPC being checked and then returns the direction
         for that NPC to move in """
@@ -54,10 +56,12 @@ class Character(pygame.sprite.Sprite):
 
         # Return de locatie van en afstand tot de dichtstbijzijnde speler
         if distance_1 > distance_2:
+            print(distance_2)
             return [player_2.rect.center, distance_2]
         elif distance_1 < distance_2:
+            print(distance_1)
             return [player_1.rect.center, distance_1]
-        else:   # Als beide spelers even dichtbij zijn, return een random speler
+        else:  # Als beide spelers even dichtbij zijn, return een random speler
             return random.choice([[player_1.rect.center, distance_1], [player_2.rect.center, distance_2]])
 
     def move_player(self, x, y):
@@ -95,7 +99,7 @@ class Character(pygame.sprite.Sprite):
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
 
         :param key:
-0        """
+        """
         # 4 keys pressed
         if key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:
             self.move_player(0, 0)
@@ -153,3 +157,22 @@ class Character(pygame.sprite.Sprite):
             self.rect.move_ip(x * self.ms / math.sqrt(2), y * self.ms / math.sqrt(2))
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
+
+    def get_gun(self, type):
+
+        self.weapon.append()
+
+
+
+'''The Gun class, creates objects for all gun types. The class can be called to create a gun.
+All Gun's have self.variables like Damage, bullet speed, Knock back, fire speed and ammunition count.
+And all Gun's'''
+class Gun(pygame.sprite.Sprite):
+    def __int__(self, type, color = 'Yellow', x, y, size = 5):
+
+        pygame.sprite.Sprite.__init__(self)
+        self.size = size
+        self.image = pygame.Surface((size, size))
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)

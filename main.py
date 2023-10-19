@@ -17,8 +17,9 @@ SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("BoxHead")
 
-'''Creating a sprite group for for the player and NPC objects'''
+'''Creating a sprite groups for: the player and NPC objects, assets and guns, '''
 Characters = pygame.sprite.Group()
+Assets = pygame.sprite.Group()
 
 '''Creating the player objects'''
 player_1 = Ob.Character("Blue", 300, 300, 1)
@@ -44,6 +45,10 @@ while run:
     Characters.update()
     Characters.draw(screen)
 
+    '''Drawing all assets and guns'''
+    Assets.update()
+    Assets.draw(screen)
+
     '''Game event handler'''
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
@@ -51,18 +56,22 @@ while run:
     player_1.player_movement(key)
     player_2.player_movement(key)
 
+
+
     '''Update the positions of all NPC's'''
-    print(NPC_1.get_closest_player(player_1,player_2))
+    #print(NPC_1.get_closest_player(player_1,player_2))
     NPC_1.npc_movement(NPC_1.get_closest_player(player_1, player_2))
-    print(NPC_2.get_closest_player(player_1, player_2))
+    #print(NPC_2.get_closest_player(player_1, player_2))
     NPC_2.npc_movement(NPC_2.get_closest_player(player_1, player_2))
-    print(NPC_3.get_closest_player(player_1, player_2))
+    #print(NPC_3.get_closest_player(player_1, player_2))
     NPC_3.npc_movement(NPC_3.get_closest_player(player_1, player_2))
-    print(NPC_4.get_closest_player(player_1, player_2))
+    #print(NPC_4.get_closest_player(player_1, player_2))
     NPC_4.npc_movement(NPC_4.get_closest_player(player_1, player_2))
-    print(NPC_5.get_closest_player(player_1, player_2))
+    #print(NPC_5.get_closest_player(player_1, player_2))
     NPC_5.npc_movement(NPC_5.get_closest_player(player_1, player_2))
-    print("\n")
+    #print("\n")
+
+    player_1.get_gun('pistol')
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
