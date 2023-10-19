@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import typing
 
 
 class Character(pygame.sprite.Sprite):
@@ -37,36 +38,31 @@ class Character(pygame.sprite.Sprite):
     """ This function checks which player is closer to the NPC being checked and then returns the direction
         for that NPC to move in """
 
-    def direction_closest_player(self, pl1, pl2):
+    def get_closest_player(self, player_1, player_2):
+        """This function returns the location of and the distance to the Player closest to this object.
+
+        :param player_1: object, with a location
+        :param player_2: object, with a location
+        :return: Tuple(int(),int())
         """
 
-        :param pl1:
-        :param pl2:
-        :return:
-        """
-        diff1 = [pl1.rect.center[0] - self.rect.center[0], pl1.rect.center[1] - self.rect.center[1]]
-        diff2 = [pl2.rect.center[0] - self.rect.center[0], pl2.rect.center[1] - self.rect.center[1]]
+        # Bereken de afstand naar beide spelers
+        distance_1 = math.sqrt(abs(player_1.rect.center[0] - self.rect.center[0]) ** 2 + abs(
+            player_1.rect.center[1] - self.rect.center[1]) ** 2)
+        distance_2 = math.sqrt(abs(player_2.rect.center[0] - self.rect.center[0]) ** 2 + abs(
+            player_2.rect.center[1] - self.rect.center[1]) ** 2)
 
-        dist1 = math.sqrt(diff1[0] ** 2 + diff1[1] ** 2)
-        dist2 = math.sqrt(diff2[0] ** 2 + diff2[1] ** 2)
+        # Return de locatie van en afstand tot de dichtstbijzijnde speler
+        if distance_1 > distance_2:
+            return [player_2.rect.center, distance_2]
+        elif distance_1 < distance_2:
+            return [player_1.rect.center, distance_1]
+        else:   # Als beide spelers even dichtbij zijn, return een random speler
+            return random.choice([[player_1.rect.center, distance_1], [player_2.rect.center, distance_2]])
 
-        ''' If player 1 is closer, return the direction from the NPC to that player. If either of the distances is 
-                equal to zero, the direction will be zero in both directions, i.e. standing still'''
-        if dist1 != 0 and dist2 != 0:
-            if dist1 <= dist2:
-                return [diff1[0] / dist1, diff1[1] / dist1]
-            # If player 2 is closer, return the direction from the NPC to that player
-            elif dist2 < dist1:
-                return [diff2[0] / dist2, diff2[1] / dist2]
-        else:
-            return [0, 0]
+    def move_player(self, x, y):
+        """ This function moves the player, according to the x and y speeds from the movement function
 
-    """This function moves the character in a Direction with x and y components according to the movement speed
-            of the character"""
-
-    def move(self, x, y):
-
-        """
         :param self: self.ms to control the movement speed
         :param x: movement component in x direction
         :param y: movement component in y direction
@@ -85,50 +81,75 @@ class Character(pygame.sprite.Sprite):
                 y = 0
             elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
                 y = 0
+
+                ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
+                the same as when moving straight.'''
             if abs(x) == abs(y):
-                self.rect.move_ip(x * self.ms, y * self.ms)
+                self.rect.move_ip(x * self.ms / math.sqrt(2), y * self.ms / math.sqrt(2))
             else:
-                self.rect.move_ip(x * self.ms * math.sqrt(2), y * self.ms * math.sqrt(2))
+                self.rect.move_ip(x * self.ms, y * self.ms)
         else:
-            self.rect.move(x, y)
+            self.rect.move_ip(x * self.ms, y * self.ms)
 
-    '''This function gives a direction for any character, based on the keys being pressed'''
     def player_movement(self, key) -> None:
+        """ This function determines the x and y speeds of a player, according to the inputs from the users.
 
+        :param key:
+0        """
         # 4 keys pressed
         if key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move(0, 0)
+            self.move_player(0, 0)
         # 3 keys pressed
         elif key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]]:
-            self.move(0, -1)
+            self.move_player(0, -1)
         elif key[self.controls[0]] * key[self.controls[1]] * key[self.controls[3]]:
-            self.move(0, 1)
+            self.move_player(0, 1)
         elif key[self.controls[0]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move(-1, 0)
+            self.move_player(-1, 0)
         elif key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move(1, 0)
+            self.move_player(1, 0)
         # 2 keys pressed
         elif key[self.controls[0]] and key[self.controls[2]]:
-            self.move(-1, -1)
+            self.move_player(-1, -1)
         elif key[self.controls[0]] * key[self.controls[1]]:
-            self.move(0, 0)
+            self.move_player(0, 0)
         elif key[self.controls[0]] * key[self.controls[3]]:
-            self.move(-1, 1)
+            self.move_player(-1, 1)
         elif key[self.controls[1]] * key[self.controls[2]]:
-            self.move(1, -1)
+            self.move_player(1, -1)
         elif key[self.controls[1]] * key[self.controls[3]]:
-            self.move(1, 1)
+            self.move_player(1, 1)
         elif key[self.controls[2]] * key[self.controls[3]]:
-            self.move(0, 0)
+            self.move_player(0, 0)
         # 1 key pressed
         elif key[self.controls[0]]:
-            self.move(-1, 0)
+            self.move_player(-1, 0)
         elif key[self.controls[1]]:
-            self.move(1, 0)
+            self.move_player(1, 0)
         elif key[self.controls[2]]:
-            self.move(0, -1)
+            self.move_player(0, -1)
         elif key[self.controls[3]]:
-            self.move(0, 1)
+            self.move_player(0, 1)
 
-    def npc_movement(self, d: list):
-        self.move(d[0], d[1])
+    def npc_movement(self, closest) -> None:
+        """ This function determines the x and y speed (0 or 1) of an NPC,
+        according to the direction to the closest player
+
+        :param closest:
+        """
+        x, y = 0, 0
+        difference = [self.rect.center[0] - closest[0][0], self.rect.center[1] - closest[0][1]]
+        distance = closest[1]
+        if distance > 0:
+            '''We use round to make the NPC movement look like that of the player, having only 8 directions.
+            self.rect.move needs didn't seem to work with a float, we also used the round function to turn the 
+            floats into integers'''
+            x = round(-difference[0] / distance)
+            y = round(-difference[1] / distance)
+
+        ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
+        when moving straight.'''
+        if abs(x) == abs(y):
+            self.rect.move_ip(x * self.ms / math.sqrt(2), y * self.ms / math.sqrt(2))
+        else:
+            self.rect.move_ip(x * self.ms, y * self.ms)
