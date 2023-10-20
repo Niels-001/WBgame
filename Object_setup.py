@@ -6,6 +6,8 @@ import typing
 '''THe Character class, creates objects for all characters Player and Non-player.
 all characters get self.variables like movement speed, health location and size.
 And they all get functions to move, and attack.'''
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self, col, x=0, y=0, player=0, size=30):
         """
@@ -56,10 +58,8 @@ class Character(pygame.sprite.Sprite):
 
         # Return de locatie van en afstand tot de dichtstbijzijnde speler
         if distance_1 > distance_2:
-            print(distance_2)
             return [player_2.rect.center, distance_2]
         elif distance_1 < distance_2:
-            print(distance_1)
             return [player_1.rect.center, distance_1]
         else:  # Als beide spelers even dichtbij zijn, return een random speler
             return random.choice([[player_1.rect.center, distance_1], [player_2.rect.center, distance_2]])
@@ -163,16 +163,47 @@ class Character(pygame.sprite.Sprite):
         self.weapon.append()
 
 
-
 '''The Gun class, creates objects for all gun types. The class can be called to create a gun.
-All Gun's have self.variables like Damage, bullet speed, Knock back, fire speed and ammunition count.
-And all Gun's'''
-class Gun(pygame.sprite.Sprite):
-    def __int__(self, type, color = 'Yellow', x, y, size = 5):
+All Gun's have self.variables like damage, fire speed, ammunition count, bullet speed, knock back.
+And all Gun's will hav functions for ... '''
 
-        pygame.sprite.Sprite.__init__(self)
+
+class Gun():
+    def __init__(self, x, y, weapon, color='Yellow', size=5):
+        """
+
+
+        :param weapon:
+        :param color:
+        :param x:
+        :param y:
+        :param size:
+        """
+
         self.size = size
         self.image = pygame.Surface((size, size))
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+
+        '''Set all the gun specific variables. [damage, fire speed, ammunition, bullet_speed, knock_back]'''
+        weapon_variables = {
+            'fist':
+                {'damage': 2, "fire_speed": 8, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 8, 'bullet_count': 0},
+            'pistol':
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
+            'UZI':
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
+            'shotgun':
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
+            'Beanbag':
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
+            'arrow':
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0}}
+
+        self.damage = weapon_variables[weapon]['damage']
+        self.fire_speed = weapon_variables[weapon]['fire_speed']
+        self.ammunition = weapon_variables[weapon]['ammunition']
+        self.bullet_speed = weapon_variables[weapon]['bullet_speed']
+        self.bullet_count = weapon_variables[weapon]['bullet_count']
+        self.knockback = weapon_variables[weapon]['knockback']

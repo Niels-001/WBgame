@@ -21,6 +21,7 @@ pygame.display.set_caption("BoxHead")
 Characters = pygame.sprite.Group()
 Assets = pygame.sprite.Group()
 
+
 '''Creating the player objects'''
 player_1 = Ob.Character("Blue", 300, 300, 1)
 player_2 = Ob.Character("Red", 500, 300, 2)
@@ -31,6 +32,9 @@ NPC_2 = Ob.Character((50,50,50), player=0)
 NPC_3 = Ob.Character((100,100,100), player=0)
 NPC_4 = Ob.Character((150,150,150), player=0)
 NPC_5 = Ob.Character((200,200,200), player=0)
+
+pistol = Ob.Gun(50, 50, "pistol")
+print(pistol.damage)
 
 '''Adding the players and NPC's to the characters list'''
 Characters.add(player_1, player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
@@ -71,7 +75,7 @@ while run:
     NPC_5.npc_movement(NPC_5.get_closest_player(player_1, player_2))
     #print("\n")
 
-    player_1.get_gun('pistol')
+
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
