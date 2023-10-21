@@ -21,23 +21,24 @@ pygame.display.set_caption("BoxHead")
 Characters = pygame.sprite.Group()
 Assets = pygame.sprite.Group()
 
+'''Creating a list and sprite group '''
+Bullets = pygame.sprite.Group()
 
 '''Creating the player objects'''
-player_1 = Ob.Character("Blue", 300, 300, 1)
-player_2 = Ob.Character("Red", 500, 300, 2)
+Player_1 = Ob.Character("Blue", 300, 300, 1)
+Player_2 = Ob.Character("Red", 500, 300, 2)
 
 '''Creating the NPC objects'''
-NPC_1 = Ob.Character((0,0,0), player=0)
-NPC_2 = Ob.Character((50,50,50), player=0)
-NPC_3 = Ob.Character((100,100,100), player=0)
-NPC_4 = Ob.Character((150,150,150), player=0)
-NPC_5 = Ob.Character((200,200,200), player=0)
+NPC_1 = Ob.Character((0, 0, 0), player=0)
+NPC_2 = Ob.Character((50, 50, 50), player=0)
+NPC_3 = Ob.Character((100, 100, 100), player=0)
+NPC_4 = Ob.Character((150, 150, 150), player=0)
+NPC_5 = Ob.Character((200, 200, 200), player=0)
 
-pistol = Ob.Gun(50, 50, "pistol")
-print(pistol.damage)
+Pistol = Ob.Gun(300, 300, "pistol")
 
 '''Adding the players and NPC's to the characters list'''
-Characters.add(player_1, player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
+Characters.add(Player_1, Player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
 
 '''Creating the game loop'''
 run = True
@@ -53,29 +54,35 @@ while run:
     Assets.update()
     Assets.draw(screen)
 
+
+    '''Drawing all bullets and updating there movement'''
+    for Bullet in Bullets:
+        Bullet.update()
+
+    Bullets.draw(screen)
+
     '''Game event handler'''
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
+    if key[pygame.K_SPACE]:
+        Bullets.add(Pistol.shoot())
+
     '''Update the positions of both players'''
-    player_1.player_movement(key)
-    player_2.player_movement(key)
-
-
+    Player_1.player_movement(key)
+    Player_2.player_movement(key)
 
     '''Update the positions of all NPC's'''
-    #print(NPC_1.get_closest_player(player_1,player_2))
-    NPC_1.npc_movement(NPC_1.get_closest_player(player_1, player_2))
-    #print(NPC_2.get_closest_player(player_1, player_2))
-    NPC_2.npc_movement(NPC_2.get_closest_player(player_1, player_2))
-    #print(NPC_3.get_closest_player(player_1, player_2))
-    NPC_3.npc_movement(NPC_3.get_closest_player(player_1, player_2))
-    #print(NPC_4.get_closest_player(player_1, player_2))
-    NPC_4.npc_movement(NPC_4.get_closest_player(player_1, player_2))
-    #print(NPC_5.get_closest_player(player_1, player_2))
-    NPC_5.npc_movement(NPC_5.get_closest_player(player_1, player_2))
-    #print("\n")
-
-
+    # NPC_1.npc_movement(NPC_1.get_closest_player(Player_1, Player_2))
+    # NPC_2.npc_movement(NPC_2.get_closest_player(Player_1, Player_2))
+    # NPC_3.npc_movement(NPC_3.get_closest_player(Player_1, Player_2))
+    # NPC_4.npc_movement(NPC_4.get_closest_player(Player_1, Player_2))
+    # NPC_5.npc_movement(NPC_5.get_closest_player(Player_1, Player_2))
+    # print(NPC_1.get_closest_player(Player_1, Player_2))
+    # print(NPC_2.get_closest_player(Player_1, Player_2))
+    # print(NPC_3.get_closest_player(Player_1, Player_2))
+    # print(NPC_4.get_closest_player(Player_1, Player_2))
+    # print(NPC_5.get_closest_player(Player_1, Player_2))
+    # print("\n")
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():

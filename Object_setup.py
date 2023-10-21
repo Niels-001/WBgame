@@ -37,7 +37,7 @@ class Character(pygame.sprite.Sprite):
         self.image.fill(col)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.weapons = list()
+        self.weapons = {'pistol': 200}
 
     """ This function checks which player is closer to the NPC being checked and then returns the direction
         for that NPC to move in """
@@ -158,9 +158,10 @@ class Character(pygame.sprite.Sprite):
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
 
-    def get_gun(self, type):
+    def get_gun(self, weapon):
+        if weapon not in self.weapons:
+            self.weapons[weapon] = 50
 
-        self.weapon.append()
 
 
 '''The Gun class, creates objects for all gun types. The class can be called to create a gun.
@@ -169,7 +170,7 @@ And all Gun's will hav functions for ... '''
 
 
 class Gun():
-    def __init__(self, x, y, weapon, color='Yellow', size=5):
+    def __init__(self, Player : object, weapon, color='Yellow', size=5):
         """
 
 
@@ -179,12 +180,6 @@ class Gun():
         :param y:
         :param size:
         """
-
-        self.size = size
-        self.image = pygame.Surface((size, size))
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
 
         '''Set all the gun specific variables. [damage, fire speed, ammunition, bullet_speed, knock_back]'''
         weapon_variables = {
@@ -207,3 +202,49 @@ class Gun():
         self.bullet_speed = weapon_variables[weapon]['bullet_speed']
         self.bullet_count = weapon_variables[weapon]['bullet_count']
         self.knockback = weapon_variables[weapon]['knockback']
+
+    def shoot(self):
+        return Bullet(Player.center[0], Player.center[1], [1, 0], 40)
+
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction: list, bullet_speed = 10, damage=5, knockback=1):
+        """This function creates a bullet with given direction, speed, damage and knockback.
+
+        :param x:
+        :param y:
+        :param direction:
+        :param bullet_speed:
+        :param damage:
+        :param knockback:
+        :return:
+        """
+        pygame.sprite.Sprite.__init__(self)
+        size = round(2 + 0.01 * damage)
+        self.size = size
+        self.image = pygame.Surface((size, size))
+        self.image.fill("Black")
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+        self.direction = direction
+        self.speed = bullet_speed
+        self.knockback = knockback
+
+    def update(self):
+        """This function updates the movement of bullets. And terminates then when they exit the field of vision(the screen).
+
+        :return:
+        """
+        x = self.direction[0] * self.speed
+        y = self.direction[1] * self.speed
+        self.rect.move_ip(x, y)
+
+        if self.rect.center[0] <= 0 - self.size:
+            self.kill()
+        elif self.rect.center[0] >= 800 + self.size:
+            self.kill()
+        elif self.rect.center[1] <= 0 - self.size:
+            self.kill()
+        elif self.rect.center[1] >= 600 + self.size:
+            self.kill()
