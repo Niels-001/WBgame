@@ -164,7 +164,7 @@ class Character(pygame.sprite.Sprite):
         ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
         when moving straight.'''
         if abs(x) == abs(y):
-            self.rect.move_ip(x * self.ms / math.sqrt(2), y * self.ms / math.sqrt(2))
+            self.rect.move_ip(round(x * self.ms / math.sqrt(2)), round(y * self.ms / math.sqrt(2)))
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
 

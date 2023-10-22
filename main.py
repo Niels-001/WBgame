@@ -76,11 +76,11 @@ while run:
         Bullets.add(Player_2.shoot(key))
 
     '''Update the positions of all NPC's'''
-    # NPC_1.npc_movement(NPC_1.get_closest_player(Player_1, Player_2))
-    # NPC_2.npc_movement(NPC_2.get_closest_player(Player_1, Player_2))
-    # NPC_3.npc_movement(NPC_3.get_closest_player(Player_1, Player_2))
-    # NPC_4.npc_movement(NPC_4.get_closest_player(Player_1, Player_2))
-    # NPC_5.npc_movement(NPC_5.get_closest_player(Player_1, Player_2))
+    NPC_1.npc_movement(NPC_1.get_closest_player(Player_1, Player_2))
+    NPC_2.npc_movement(NPC_2.get_closest_player(Player_1, Player_2))
+    NPC_3.npc_movement(NPC_3.get_closest_player(Player_1, Player_2))
+    NPC_4.npc_movement(NPC_4.get_closest_player(Player_1, Player_2))
+    NPC_5.npc_movement(NPC_5.get_closest_player(Player_1, Player_2))
     # print(NPC_1.get_closest_player(Player_1, Player_2))
     # print(NPC_2.get_closest_player(Player_1, Player_2))
     # print(NPC_3.get_closest_player(Player_1, Player_2))
