@@ -40,7 +40,7 @@ class Character(pygame.sprite.Sprite):
         # set player position and direction
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.direction = [1,0]
+        self.direction = [1, 0]
 
         # Set up the weapons
         Pistol = Gun(self, 'pistol')

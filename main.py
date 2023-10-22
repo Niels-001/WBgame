@@ -1,6 +1,5 @@
 """Imports of important python libraries"""
 import pygame  # for the UI, game mechanics and event handling
-import time  # for all time related commands
 import Object_setup as Ob  # importing the setup file we made ourselves
 
 '''Initiating pygame'''
