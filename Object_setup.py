@@ -97,7 +97,7 @@ class Character(pygame.sprite.Sprite):
         self.direction = [x, y]
         self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
 
-    def inputs(self, key, rects1, rects2) -> None:
+    def inputs(self, key, rects) -> None:
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
 
         :param rects1:
@@ -144,28 +144,16 @@ class Character(pygame.sprite.Sprite):
         elif key[self.controls[3]]:
             x, y = 0, 1
 
-        if self.player == 1:
-            for rect in rects1:
-                if self.rect.colliderect(rect):
-                    if rect[0] >= self.rect.center[0] - self.size or rect[0] <= self.rect.center[0] + self.size:
-                        x = 0
-                    elif rect[1] <= self.rect.center[1] - self.size or rect[1] >= self.rect.center[1] + self.size:
-                        y = 0
-
-            print("\n")
-        elif self.player == 2:
-            for rect in rects2:
-                if self.rect.colliderect(rect):
-                    if self.rect.colliderect(rect):
-                        if rect[0] <= self.rect.center[0] - 30 or rect[0] >= self.rect.center[0] + 30:
-                            x = 0
-                        elif rect[1] <= self.rect.center[1] - 30 or rect[1] >= self.rect.center[1] + 30:
-                            y = 0
-
+        for rect in rects:
+            if self.rect.colliderect(rect):
+                if (rect[0] >= self.rect.center[0] - 25 and x > 0) or (rect[0] <= self.rect.center[0] - 35 and x < 0):
+                    x = 0
+                elif (rect[1] >= self.rect.center[1] - 25 and y > 0) or (rect[1] <= self.rect.center[1] - 35 and y < 0):
+                    y = 0
 
         self.move_player(x, y)
 
-    def npc_movement(self, closest) -> None:
+    def npc_movement(self, closest, rects) -> None:
         """ This function determines the x and y speed (0 or 1) of an NPC,
         according to the direction to the closest player
 
@@ -181,7 +169,12 @@ class Character(pygame.sprite.Sprite):
             x = round(-difference[0] / distance)
             y = round(-difference[1] / distance)
 
-
+        for rect in rects:
+            if self.rect.colliderect(rect):
+                if (rect[0] >= self.rect.center[0] - 20 and x > 0) or (rect[0] <= self.rect.center[0] - 40 and x < 0):
+                    x = 0
+                elif (rect[1] >= self.rect.center[1] - 20 and y > 0) or (rect[1] <= self.rect.center[1] - 40 and y < 0):
+                    y = 0
 
         ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
         when moving straight.'''
@@ -189,10 +182,6 @@ class Character(pygame.sprite.Sprite):
             self.rect.move_ip(round(x * self.ms / math.sqrt(2)), round(y * self.ms / math.sqrt(2)))
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
-
-    def collide(self, characters):
-        if self.rect.collidelist(characters):
-            return self.rect.collidelist(characters)
 
     def get_gun(self, weapon: object):
         if weapon in self.weapons:
