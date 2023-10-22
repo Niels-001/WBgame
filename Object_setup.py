@@ -16,17 +16,14 @@ class Character(pygame.sprite.Sprite):
         :param y:
         :param player:
         """
-
-        if player == 1:
-            self.player = True
+        self.player = player
+        if self.player == 1:
             self.controls = [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE]
             self.ms = 5
-        elif player == 2:
-            self.player = True
+        elif self.player == 2:
             self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH]
             self.ms = 5
         else:
-            self.player = False
             x = random.randint(50, 750)
             y = random.randint(50, 550)
             self.ms = 1
@@ -40,12 +37,12 @@ class Character(pygame.sprite.Sprite):
         # set player position and direction
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.direction = [1,0]
+        self.direction = [1, 0]
 
         # Set up the Staring weapon
-        Pistol = Gun(self, 'pistol')
-        self.weapons = {Pistol: 200}
-        self.active_weapon = Pistol
+        pistol = Gun(self, 'pistol')
+        self.weapons = {pistol: 200}
+        self.active_weapon = pistol
 
     """ This function checks which player is closer to the NPC being checked and then returns the direction
         for that NPC to move in """
@@ -96,54 +93,77 @@ class Character(pygame.sprite.Sprite):
 
             ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
             the same as when moving straight.'''
-        if abs(x) == abs(y):
-            self.direction = [x / math.sqrt(2), y / math.sqrt(2)]
-            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
-        else:
-            self.direction = [x, y]
-            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
 
+        self.direction = [x, y]
+        self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
 
-
-    def player_movement(self, key) -> None:
+    def inputs(self, key, rects1, rects2) -> None:
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
 
+        :param rects1:
+        :param rects2:
         :param key:
         """
+
+        x, y = 0, 0
+        colliders1 = []
+        colliders2 = []
+
         # 4 keys pressed
         if key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move_player(0, 0)
+            x, y = 0, 0
         # 3 keys pressed
         elif key[self.controls[0]] * key[self.controls[1]] * key[self.controls[2]]:
-            self.move_player(0, -1)
+            x, y = 0, -1
         elif key[self.controls[0]] * key[self.controls[1]] * key[self.controls[3]]:
-            self.move_player(0, 1)
+            x, y = 0, 1
         elif key[self.controls[0]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move_player(-1, 0)
+            x, y = -1, 0
         elif key[self.controls[1]] * key[self.controls[2]] * key[self.controls[3]]:
-            self.move_player(1, 0)
+            x, y = 1, 0
         # 2 keys pressed
         elif key[self.controls[0]] and key[self.controls[2]]:
-            self.move_player(-1, -1)
+            x, y = -math.sqrt(2) / 2, -math.sqrt(2) / 2
         elif key[self.controls[0]] * key[self.controls[1]]:
-            self.move_player(0, 0)
+            x, y = 0, 0
         elif key[self.controls[0]] * key[self.controls[3]]:
-            self.move_player(-1, 1)
+            x, y = -math.sqrt(2) / 2, math.sqrt(2) / 2
         elif key[self.controls[1]] * key[self.controls[2]]:
-            self.move_player(1, -1)
+            x, y = math.sqrt(2) / 2, -math.sqrt(2) / 2
         elif key[self.controls[1]] * key[self.controls[3]]:
-            self.move_player(1, 1)
+            x, y = math.sqrt(2) / 2, math.sqrt(2) / 2
         elif key[self.controls[2]] * key[self.controls[3]]:
-            self.move_player(0, 0)
+            x, y = 0, 0
         # 1 key pressed
         elif key[self.controls[0]]:
-            self.move_player(-1, 0)
+            x, y = -1, 0
         elif key[self.controls[1]]:
-            self.move_player(1, 0)
+            x, y = 1, 0
         elif key[self.controls[2]]:
-            self.move_player(0, -1)
+            x, y = 0, -1
         elif key[self.controls[3]]:
-            self.move_player(0, 1)
+            x, y = 0, 1
+
+        if self.player == 1:
+            for rect in rects1:
+                if self.rect.colliderect(rect):
+                    if rect[0] >= self.rect.center[0] - self.size or rect[0] <= self.rect.center[0] + self.size:
+                        x = 0
+                    elif rect[1] <= self.rect.center[1] - self.size or rect[1] >= self.rect.center[1] + self.size:
+                        y = 0
+
+            print("\n")
+        elif self.player == 2:
+            for rect in rects2:
+                if self.rect.colliderect(rect):
+                    if self.rect.colliderect(rect):
+                        if rect[0] <= self.rect.center[0] - 30 or rect[0] >= self.rect.center[0] + 30:
+                            x = 0
+                        elif rect[1] <= self.rect.center[1] - 30 or rect[1] >= self.rect.center[1] + 30:
+                            y = 0
+
+
+        self.move_player(x, y)
 
     def npc_movement(self, closest) -> None:
         """ This function determines the x and y speed (0 or 1) of an NPC,
@@ -161,12 +181,18 @@ class Character(pygame.sprite.Sprite):
             x = round(-difference[0] / distance)
             y = round(-difference[1] / distance)
 
+
+
         ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
         when moving straight.'''
         if abs(x) == abs(y):
             self.rect.move_ip(round(x * self.ms / math.sqrt(2)), round(y * self.ms / math.sqrt(2)))
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
+
+    def collide(self, characters):
+        if self.rect.collidelist(characters):
+            return self.rect.collidelist(characters)
 
     def get_gun(self, weapon: object):
         if weapon in self.weapons:
@@ -184,16 +210,13 @@ class Character(pygame.sprite.Sprite):
             return False
 
 
-'''The Gun class, creates objects for all gun types. The class can be called to create a gun.
-All Gun's have self.variables like damage, fire speed, ammunition count, bullet speed, knock back.
-And all Gun's will hav functions for ... '''
+class Gun:
+    def __init__(self, player: object, weapon, color='Yellow', size=5):
+        """The Gun class, creates objects for all gun types. The class can be called to create a gun.
+            All Gun's have variables like damage, fire speed, ammunition count, bullet speed, knock back.
+            And all Gun's will have functions for ...
 
-
-class Gun():
-    def __init__(self, Player: object, weapon, color='Yellow', size=5):
-        """
-
-        :param Player:
+        :param player:
         :param weapon:
         :param color:
         :param size:
@@ -214,7 +237,7 @@ class Gun():
             'arrow':
                 {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0}}
 
-        self.player = Player
+        self.player = player
 
         self.damage = weapon_variables[weapon]['damage']
         self.fire_speed = weapon_variables[weapon]['fire_speed']
