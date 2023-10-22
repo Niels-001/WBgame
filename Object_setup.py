@@ -25,7 +25,8 @@ class Character(pygame.sprite.Sprite):
         elif player == 2:
             self.player = True
             self.controls = \
-                [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH, pygame.K_COMMA, pygame.K_PERIOD]
+                [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH, pygame.K_COMMA,
+                 pygame.K_PERIOD]
             self.ms = 5
         else:
             self.player = False
@@ -69,7 +70,6 @@ class Character(pygame.sprite.Sprite):
 
         self.check_hits(bullet, characters)
 
-
     def move(self, x, y):
         """ This function moves the player, according to the x and y speeds from the movement function
 
@@ -94,9 +94,9 @@ class Character(pygame.sprite.Sprite):
 
         ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
         the same as when moving straight.'''
-        if not(x == 0 and y == 0) :
+        if not (x == 0 and y == 0):
             if abs(x) == abs(y):
-                self.direction = [x / math.sqrt(2), y / math.sqrt(2)]
+                self.direction = [round(x / math.sqrt(2)), round(y / math.sqrt(2))]
                 self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
             else:
                 self.direction = [x, y]
@@ -146,17 +146,17 @@ class Character(pygame.sprite.Sprite):
         else:
             x, y = 0, 0
 
-        for character in characters:
-            if character != self:
-                if self.rect.colliderect(character.rect):
-                    if self.rect.center[0] == character.rect.center[0] - character.size and x > 0:
-                        x = 0
-                    elif self.rect.center[0] == character.rect.center[0] + character.size and x < 0:
-                        x = 0
-                    elif self.rect.center[1] == character.rect.center[1] -character.size and y > 0:
-                        y = 0
-                    elif self.rect.center[1] == character.rect.center[1] + character.size and y < 0:
-                        y = 0
+        # for character in characters:
+        #     if character != self:
+        #         if self.rect.colliderect(character.rect):
+        #             if self.rect.center[0] >= character.rect.center[0] - character.size and x > 0:
+        #                 x = 0
+        #             elif self.rect.center[0] <= character.rect.center[0] + character.size and x < 0:
+        #                 x = 0
+        #             elif self.rect.center[1] >= character.rect.center[1] - character.size and y > 0:
+        #                 y = 0
+        #             elif self.rect.center[1] <= character.rect.center[1] + character.size and y < 0:
+        #                 y = 0
 
         self.move(x, y)
 
@@ -180,7 +180,8 @@ class Character(pygame.sprite.Sprite):
         elif distance_1 < distance_2:
             return [list(characters)[0].rect.center, distance_1]
         else:  # Als beide spelers even dichtbij zijn, return een random speler
-            return random.choice([[list(characters)[0].rect.center, distance_1], [list(characters)[1].rect.center, distance_2]])
+            return random.choice(
+                [[list(characters)[0].rect.center, distance_1], [list(characters)[1].rect.center, distance_2]])
 
     def npc_movement(self, closest, characters) -> None:
         """ This function determines the x and y speed (0 or 1) of an NPC,
@@ -198,17 +199,24 @@ class Character(pygame.sprite.Sprite):
             x = round(-difference[0] / distance)
             y = round(-difference[1] / distance)
 
-
         for character in characters:
             if character != self:
                 if self.rect.colliderect(character.rect):
-                    if  self.rect.center[0] == character.rect.center[0] - character.size and x > 0:
+                    if (self.rect.center[0] >= character.rect.center[0] - character.size and x > 0
+                            and (self.rect.center[1] >= character.rect.center[1] - character.size
+                                 or self.rect.center[1] <= character.rect.center[1] + character.size)):
                         x = 0
-                    elif self.rect.center[0] == character.rect.center[0] + character.size and x < 0:
+                    elif (self.rect.center[0] <= character.rect.center[0] + character.size and x < 0
+                            and (self.rect.center[1] >= character.rect.center[1] - character.size
+                                 or self.rect.center[1] <= character.rect.center[1] + character.size)):
                         x = 0
-                    elif self.rect.center[1] == character.rect.center[1] - character.size and y > 0:
+                    elif (self.rect.center[1] >= character.rect.center[1] - character.size and y > 0
+                            and (self.rect.center[0] >= character.rect.center[0] - character.size
+                                 or self.rect.center[0] <= character.rect.center[0] + character.size)):
                         y = 0
-                    elif self.rect.center[1] == character.rect.center[1] + character.size and y < 0:
+                    elif (self.rect.center[1] <= character.rect.center[1] + character.size and y < 0
+                            and (self.rect.center[0] >= character.rect.center[0] - character.size
+                                 or self.rect.center[0] <= character.rect.center[0] + character.size)):
                         y = 0
 
         ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
@@ -230,12 +238,11 @@ class Character(pygame.sprite.Sprite):
     def check_hits(self, bullets, characters):
         for bullet in bullets:
             if not self.player:
-                print('check')
                 if self in characters:
-                    print("jes")
                     if self.rect.colliderect(bullet.rect):
                         self.remove(characters)
                         bullet.kill()
+
 
 class Gun():
     """The Gun class, creates objects for all gun types. The class can be called to create a gun.
@@ -282,7 +289,9 @@ class Gun():
                 if self.shot_delay == 0:
                     self.shot_delay = self.fire_speed
                     self.player.weapons[self] -= 1
-                    bullet = Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, self.bullet_speed)
+                    bullet = Bullet(self.player.rect.center[0] + self.player.direction[0] * self.player.size,
+                                    self.player.rect.center[1] + self.player.direction[1] * self.player.size, self.player.direction,
+                                    self.bullet_speed)
                     return group.add(bullet)
             else:
                 print('out of ammunition')
@@ -290,11 +299,11 @@ class Gun():
         if self.shot_delay > 0:
             self.shot_delay -= 1
 
-
         # if key[self.player.controls[4]]:
         #     return Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, 40)
         # else:
         #     return False
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction: list, bullet_speed=10, damage=5, knockback=1):
