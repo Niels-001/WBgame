@@ -19,11 +19,11 @@ class Character(pygame.sprite.Sprite):
 
         if player == 1:
             self.player = True
-            self.controls = [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s]
+            self.controls = [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE]
             self.ms = 5
         elif player == 2:
             self.player = True
-            self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+            self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH]
             self.ms = 5
         else:
             self.player = False
@@ -31,13 +31,21 @@ class Character(pygame.sprite.Sprite):
             y = random.randint(50, 550)
             self.ms = 1
 
+        # Create the Visual representation and hitboxes
         pygame.sprite.Sprite.__init__(self)
         self.size = size
         self.image = pygame.Surface((size, size))
         self.image.fill(col)
+
+        # set player position and direction
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.weapons = {'pistol': 200}
+        self.direction = [1,0]
+
+        # Set up the Staring weapon
+        Pistol = Gun(self, 'pistol')
+        self.weapons = {Pistol: 200}
+        self.active_weapon = Pistol
 
     """ This function checks which player is closer to the NPC being checked and then returns the direction
         for that NPC to move in """
@@ -76,24 +84,26 @@ class Character(pygame.sprite.Sprite):
         '''If the character is a player, check if it's on the border. If so, make its speed in that direction zero
             If the character is an NPC, we don't need to check the borders, because it will only move toward a 
             player, which can't move outside them'''
-        if self.player:
-            if self.rect.center[0] <= 0 + 0.5 * self.size and x < 0:
-                x = 0
-            elif self.rect.center[0] >= 800 - 0.5 * self.size and x > 0:
-                x = 0
-            if self.rect.center[1] <= 0 + 0.5 * self.size and y < 0:
-                y = 0
-            elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
-                y = 0
 
-                ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
-                the same as when moving straight.'''
-            if abs(x) == abs(y):
-                self.rect.move_ip(x * self.ms / math.sqrt(2), y * self.ms / math.sqrt(2))
-            else:
-                self.rect.move_ip(x * self.ms, y * self.ms)
+        if self.rect.center[0] <= 0 + 0.5 * self.size and x < 0:
+            x = 0
+        elif self.rect.center[0] >= 800 - 0.5 * self.size and x > 0:
+            x = 0
+        if self.rect.center[1] <= 0 + 0.5 * self.size and y < 0:
+            y = 0
+        elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
+            y = 0
+
+            ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
+            the same as when moving straight.'''
+        if abs(x) == abs(y):
+            self.direction = [x / math.sqrt(2), y / math.sqrt(2)]
+            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
         else:
-            self.rect.move_ip(x * self.ms, y * self.ms)
+            self.direction = [x, y]
+            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
+
+
 
     def player_movement(self, key) -> None:
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
@@ -158,10 +168,20 @@ class Character(pygame.sprite.Sprite):
         else:
             self.rect.move_ip(x * self.ms, y * self.ms)
 
-    def get_gun(self, weapon):
-        if weapon not in self.weapons:
+    def get_gun(self, weapon: object):
+        if weapon in self.weapons:
+            self.weapons[weapon] += 50
+        else:
+            weapon = Gun(self, str(weapon))
             self.weapons[weapon] = 50
 
+        self.active_weapon = weapon
+
+    def shoot(self, key):
+        if key[self.controls[4]]:
+            return self.active_weapon.shoot()
+        else:
+            return False
 
 
 '''The Gun class, creates objects for all gun types. The class can be called to create a gun.
@@ -170,14 +190,12 @@ And all Gun's will hav functions for ... '''
 
 
 class Gun():
-    def __init__(self, Player : object, weapon, color='Yellow', size=5):
+    def __init__(self, Player: object, weapon, color='Yellow', size=5):
         """
 
-
+        :param Player:
         :param weapon:
         :param color:
-        :param x:
-        :param y:
         :param size:
         """
 
@@ -196,6 +214,8 @@ class Gun():
             'arrow':
                 {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0}}
 
+        self.player = Player
+
         self.damage = weapon_variables[weapon]['damage']
         self.fire_speed = weapon_variables[weapon]['fire_speed']
         self.ammunition = weapon_variables[weapon]['ammunition']
@@ -204,11 +224,11 @@ class Gun():
         self.knockback = weapon_variables[weapon]['knockback']
 
     def shoot(self):
-        return Bullet(Player.center[0], Player.center[1], [1, 0], 40)
+        return Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, 40)
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction: list, bullet_speed = 10, damage=5, knockback=1):
+    def __init__(self, x, y, direction: list, bullet_speed=10, damage=5, knockback=1):
         """This function creates a bullet with given direction, speed, damage and knockback.
 
         :param x:

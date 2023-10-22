@@ -35,7 +35,7 @@ NPC_3 = Ob.Character((100, 100, 100), player=0)
 NPC_4 = Ob.Character((150, 150, 150), player=0)
 NPC_5 = Ob.Character((200, 200, 200), player=0)
 
-Pistol = Ob.Gun(300, 300, "pistol")
+# Pistol = Ob.Gun(300, 300, "pistol")
 
 '''Adding the players and NPC's to the characters list'''
 Characters.add(Player_1, Player_2, NPC_1, NPC_2, NPC_3, NPC_4, NPC_5)
@@ -54,7 +54,6 @@ while run:
     Assets.update()
     Assets.draw(screen)
 
-
     '''Drawing all bullets and updating there movement'''
     for Bullet in Bullets:
         Bullet.update()
@@ -64,12 +63,17 @@ while run:
     '''Game event handler'''
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
-    if key[pygame.K_SPACE]:
-        Bullets.add(Pistol.shoot())
+    # if key[pygame.K_SPACE]:
+    #     Bullets.add(Pistol.shoot())
 
     '''Update the positions of both players'''
     Player_1.player_movement(key)
     Player_2.player_movement(key)
+
+    if Player_1.shoot(key) != False:
+        Bullets.add(Player_1.shoot(key))
+    if Player_2.shoot(key) != False:
+        Bullets.add(Player_2.shoot(key))
 
     '''Update the positions of all NPC's'''
     # NPC_1.npc_movement(NPC_1.get_closest_player(Player_1, Player_2))
