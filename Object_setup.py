@@ -40,27 +40,15 @@ class Character(pygame.sprite.Sprite):
         # set player position and direction
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.direction = [1, 0]
+        self.direction = [1,0]
 
-        # Set up the weapons
+        # Set up the Staring weapon
         Pistol = Gun(self, 'pistol')
-        UZI = Gun(self, 'UZI')
-        self.weapons = {Pistol: 200, UZI: 0}
+        self.weapons = {Pistol: 200}
         self.active_weapon = Pistol
 
-    def update(self, key, group):
-        if self.player:
-            self.player_movement(key)
-
-            if key[pygame.K_1]:
-                self.active_weapon = list(self.weapons.keys())[0]
-            elif key[pygame.K_2]:
-                self.active_weapon = list(self.weapons.keys())[1]
-            elif key[pygame.K_0]:
-                for weapon in self.weapons:
-                    self.weapons[weapon] = 20
-
-            self.update_gun(key, group)
+    """ This function checks which player is closer to the NPC being checked and then returns the direction
+        for that NPC to move in """
 
     def get_closest_player(self, player_1, player_2):
         """This function returns the location of and the distance to the Player closest to this object.
@@ -106,15 +94,16 @@ class Character(pygame.sprite.Sprite):
         elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
             y = 0
 
-        ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
-        the same as when moving straight.'''
-        if not(x == 0 and y == 0) :
-            if abs(x) == abs(y):
-                self.direction = [x / math.sqrt(2), y / math.sqrt(2)]
-                self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
-            else:
-                self.direction = [x, y]
-                self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
+            ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
+            the same as when moving straight.'''
+        if abs(x) == abs(y):
+            self.direction = [x / math.sqrt(2), y / math.sqrt(2)]
+            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
+        else:
+            self.direction = [x, y]
+            self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
+
+
 
     def player_movement(self, key) -> None:
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
@@ -183,20 +172,24 @@ class Character(pygame.sprite.Sprite):
         if weapon in self.weapons:
             self.weapons[weapon] += 50
         else:
+            weapon = Gun(self, str(weapon))
             self.weapons[weapon] = 50
 
         self.active_weapon = weapon
 
-    def update_gun(self, key, group):
-        return self.active_weapon.update(key, group)
+    def shoot(self, key):
+        if key[self.controls[4]]:
+            return self.active_weapon.shoot()
+        else:
+            return False
 
+
+'''The Gun class, creates objects for all gun types. The class can be called to create a gun.
+All Gun's have self.variables like damage, fire speed, ammunition count, bullet speed, knock back.
+And all Gun's will hav functions for ... '''
 
 
 class Gun():
-    """The Gun class, creates objects for all gun types. The class can be called to create a gun.
-    All Gun's have self.variables like damage, fire speed, ammunition count, bullet speed, knock back.
-    And all Gun's will hav functions for ... """
-
     def __init__(self, Player: object, weapon, color='Yellow', size=5):
         """
 
@@ -209,47 +202,30 @@ class Gun():
         '''Set all the gun specific variables. [damage, fire speed, ammunition, bullet_speed, knock_back]'''
         weapon_variables = {
             'fist':
-                {'damage': 2, "fire_speed": 1, 'bullet_speed': 15, 'knockback': 8, 'bullet_count': 0},
+                {'damage': 2, "fire_speed": 8, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 8, 'bullet_count': 0},
             'pistol':
-                {'damage': 5, "fire_speed": 30, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 1},
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
             'UZI':
-                {'damage': 5, "fire_speed": 10, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 1},
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
             'shotgun':
-                {'damage': 5, "fire_speed": 5, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 6},
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
             'Beanbag':
-                {'damage': 5, "fire_speed": 5, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 1},
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0},
             'arrow':
-                {'damage': 5, "fire_speed": -1, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 1}}
+                {'damage': 5, "fire_speed": 5, 'ammunition': 8, 'bullet_speed': 15, 'knockback': 3, 'bullet_count': 0}}
 
         self.player = Player
 
         self.damage = weapon_variables[weapon]['damage']
         self.fire_speed = weapon_variables[weapon]['fire_speed']
+        self.ammunition = weapon_variables[weapon]['ammunition']
         self.bullet_speed = weapon_variables[weapon]['bullet_speed']
         self.bullet_count = weapon_variables[weapon]['bullet_count']
         self.knockback = weapon_variables[weapon]['knockback']
 
-        self.shot_delay = 0
+    def shoot(self):
+        return Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, 40)
 
-    def update(self, key, group):
-        if key[self.player.controls[4]]:
-            if self.player.weapons[self] > 0:
-                if self.shot_delay == 0:
-                    self.shot_delay = self.fire_speed
-                    self.player.weapons[self] -= 1
-                    bullet = Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, self.bullet_speed)
-                    return group.add(bullet)
-            else:
-                print('out of ammunition')
-
-        if self.shot_delay > 0:
-            self.shot_delay -= 1
-
-
-        # if key[self.player.controls[4]]:
-        #     return Bullet(self.player.rect.center[0], self.player.rect.center[1], self.player.direction, 40)
-        # else:
-        #     return False
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction: list, bullet_speed=10, damage=5, knockback=1):
@@ -275,7 +251,7 @@ class Bullet(pygame.sprite.Sprite):
         self.speed = bullet_speed
         self.knockback = knockback
 
-    def update_bullets(self):
+    def update(self):
         """This function updates the movement of bullets. And terminates then when they exit the field of vision(the screen).
 
         :return:
