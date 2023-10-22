@@ -19,11 +19,13 @@ class Character(pygame.sprite.Sprite):
 
         if player == 1:
             self.player = True
-            self.controls = [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE]
+            self.controls = \
+                [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE, pygame.K_q, pygame.K_e]
             self.ms = 5
         elif player == 2:
             self.player = True
-            self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH]
+            self.controls = \
+                [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN, pygame.K_SLASH, pygame.K_COMMA, pygame.K_PERIOD]
             self.ms = 5
         else:
             self.player = False
@@ -48,43 +50,27 @@ class Character(pygame.sprite.Sprite):
         self.weapons = {Pistol: 200, UZI: 0}
         self.active_weapon = Pistol
 
-    def update(self, key, group, check):
+    def update(self, key, bullet, characters):
         if self.player:
-            self.player_movement(key, check)
+            self.player_movement(key, characters)
 
-            if key[pygame.K_1]:
+            # Switch guns
+            if key[self.controls[5]]:
                 self.active_weapon = list(self.weapons.keys())[0]
-            elif key[pygame.K_2]:
+            elif key[self.controls[6]]:
                 self.active_weapon = list(self.weapons.keys())[1]
             elif key[pygame.K_0]:
                 for weapon in self.weapons:
                     self.weapons[weapon] = 20
 
-            self.update_gun(key, group)
+            self.update_gun(key, bullet)
+        else:
+            self.npc_movement(self.get_closest_player(characters), characters)
 
-    def get_closest_player(self, player_1, player_2):
-        """This function returns the location of and the distance to the Player closest to this object.
+        self.check_hits(bullet, characters)
 
-        :param player_1: object, with a location
-        :param player_2: object, with a location
-        :return: Tuple(int(),int())
-        """
 
-        # Bereken de afstand naar beide spelers
-        distance_1 = math.sqrt(abs(player_1.rect.center[0] - self.rect.center[0]) ** 2 + abs(
-            player_1.rect.center[1] - self.rect.center[1]) ** 2)
-        distance_2 = math.sqrt(abs(player_2.rect.center[0] - self.rect.center[0]) ** 2 + abs(
-            player_2.rect.center[1] - self.rect.center[1]) ** 2)
-
-        # Return de locatie van en afstand tot de dichtstbijzijnde speler
-        if distance_1 > distance_2:
-            return [player_2.rect.center, distance_2]
-        elif distance_1 < distance_2:
-            return [player_1.rect.center, distance_1]
-        else:  # Als beide spelers even dichtbij zijn, return een random speler
-            return random.choice([[player_1.rect.center, distance_1], [player_2.rect.center, distance_2]])
-
-    def move_player(self, x, y):
+    def move(self, x, y):
         """ This function moves the player, according to the x and y speeds from the movement function
 
         :param self: self.ms to control the movement speed
@@ -96,15 +82,15 @@ class Character(pygame.sprite.Sprite):
         '''If the character is a player, check if it's on the border. If so, make its speed in that direction zero
             If the character is an NPC, we don't need to check the borders, because it will only move toward a 
             player, which can't move outside them'''
-
-        if self.rect.center[0] <= 0 + 0.5 * self.size and x < 0:
-            x = 0
-        elif self.rect.center[0] >= 800 - 0.5 * self.size and x > 0:
-            x = 0
-        if self.rect.center[1] <= 0 + 0.5 * self.size and y < 0:
-            y = 0
-        elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
-            y = 0
+        if self.player:
+            if self.rect.center[0] <= 0 + 0.5 * self.size and x < 0:
+                x = 0
+            elif self.rect.center[0] >= 800 - 0.5 * self.size and x > 0:
+                x = 0
+            if self.rect.center[1] <= 0 + 0.5 * self.size and y < 0:
+                y = 0
+            elif self.rect.center[1] >= 600 - 0.5 * self.size and y > 0:
+                y = 0
 
         ''' If x and y are both 1, make divide both by the square root of 2, so the resultant speed remains 
         the same as when moving straight.'''
@@ -116,7 +102,7 @@ class Character(pygame.sprite.Sprite):
                 self.direction = [x, y]
                 self.rect.move_ip(self.direction[0] * self.ms, self.direction[1] * self.ms)
 
-    def player_movement(self, key, rects) -> None:
+    def player_movement(self, key, characters) -> None:
         """ This function determines the x and y speeds of a player, according to the inputs from the users.
 
         :param rects1:
@@ -160,16 +146,43 @@ class Character(pygame.sprite.Sprite):
         else:
             x, y = 0, 0
 
-        for rect in rects:
-            if self.rect.colliderect(rect):
-                if (rect[0] >= self.rect.center[0] - 25 and x > 0) or (rect[0] <= self.rect.center[0] - 35 and x < 0):
-                    x = 0
-                elif (rect[1] >= self.rect.center[1] - 25 and y > 0) or (rect[1] <= self.rect.center[1] - 35 and y < 0):
-                    y = 0
+        for character in characters:
+            if character != self:
+                if self.rect.colliderect(character.rect):
+                    if self.rect.center[0] == character.rect.center[0] - character.size and x > 0:
+                        x = 0
+                    elif self.rect.center[0] == character.rect.center[0] + character.size and x < 0:
+                        x = 0
+                    elif self.rect.center[1] == character.rect.center[1] -character.size and y > 0:
+                        y = 0
+                    elif self.rect.center[1] == character.rect.center[1] + character.size and y < 0:
+                        y = 0
 
-        self.move_player(x, y)
+        self.move(x, y)
 
-    def npc_movement(self, closest, rects) -> None:
+    def get_closest_player(self, characters):
+        """This function returns the location of and the distance to the Player closest to this object.
+
+        :param player_1: object, with a location
+        :param player_2: object, with a location
+        :return: Tuple(int(),int())
+        """
+
+        # Bereken de afstand naar beide spelers
+        distance_1 = math.sqrt(abs(list(characters)[0].rect.center[0] - self.rect.center[0]) ** 2 + abs(
+            list(characters)[0].rect.center[1] - self.rect.center[1]) ** 2)
+        distance_2 = math.sqrt(abs(list(characters)[1].rect.center[0] - self.rect.center[0]) ** 2 + abs(
+            list(characters)[1].rect.center[1] - self.rect.center[1]) ** 2)
+
+        # Return de locatie van en afstand tot de dichtstbijzijnde speler
+        if distance_1 > distance_2:
+            return [list(characters)[1].rect.center, distance_2]
+        elif distance_1 < distance_2:
+            return [list(characters)[0].rect.center, distance_1]
+        else:  # Als beide spelers even dichtbij zijn, return een random speler
+            return random.choice([[list(characters)[0].rect.center, distance_1], [list(characters)[1].rect.center, distance_2]])
+
+    def npc_movement(self, closest, characters) -> None:
         """ This function determines the x and y speed (0 or 1) of an NPC,
         according to the direction to the closest player
 
@@ -185,19 +198,22 @@ class Character(pygame.sprite.Sprite):
             x = round(-difference[0] / distance)
             y = round(-difference[1] / distance)
 
-        for rect in rects:
-            if self.rect.colliderect(rect):
-                if (rect[0] >= self.rect.center[0] - 20 and x > 0) or (rect[0] <= self.rect.center[0] - 40 and x < 0):
-                    x = 0
-                elif (rect[1] >= self.rect.center[1] - 20 and y > 0) or (rect[1] <= self.rect.center[1] - 40 and y < 0):
-                    y = 0
+
+        for character in characters:
+            if character != self:
+                if self.rect.colliderect(character.rect):
+                    if  self.rect.center[0] == character.rect.center[0] - character.size and x > 0:
+                        x = 0
+                    elif self.rect.center[0] == character.rect.center[0] + character.size and x < 0:
+                        x = 0
+                    elif self.rect.center[1] == character.rect.center[1] - character.size and y > 0:
+                        y = 0
+                    elif self.rect.center[1] == character.rect.center[1] + character.size and y < 0:
+                        y = 0
 
         ''' If x and y are both 1,  divide both by the square root of 2, so the resultant speed remains the same as
         when moving straight.'''
-        if abs(x) == abs(y):
-            self.rect.move_ip(round(x * self.ms / math.sqrt(2)), round(y * self.ms / math.sqrt(2)))
-        else:
-            self.rect.move_ip(x * self.ms, y * self.ms)
+        self.move(x, y)
 
     def get_gun(self, weapon: object):
         if weapon in self.weapons:
@@ -211,7 +227,15 @@ class Character(pygame.sprite.Sprite):
     def update_gun(self, key, group):
         return self.active_weapon.update(key, group)
 
-
+    def check_hits(self, bullets, characters):
+        for bullet in bullets:
+            if not self.player:
+                print('check')
+                if self in characters:
+                    print("jes")
+                    if self.rect.colliderect(bullet.rect):
+                        self.remove(characters)
+                        bullet.kill()
 
 class Gun():
     """The Gun class, creates objects for all gun types. The class can be called to create a gun.

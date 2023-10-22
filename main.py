@@ -19,7 +19,8 @@ pygame.display.set_caption("BoxHead")
 '''Creating a sprite groups for: the player and NPC objects, assets and guns, '''
 Characters = pygame.sprite.Group()
 
-'''Creating a list and sprite group '''
+
+'''Creating a sprite group for Bullets '''
 Bullets = pygame.sprite.Group()
 
 '''Creating the player objects'''
@@ -47,6 +48,7 @@ while run:
     '''Drawing players and NPC's'''
     Characters.draw(screen)
 
+
     '''Drawing all bullets and updating there movement'''
     for Bullet in Bullets:
         Bullet.update_bullets()
@@ -56,26 +58,16 @@ while run:
     '''Game event handler'''
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
-    '''Lists for collision checks'''
-    checks1 = [Player_2.rect, NPC_1.rect, NPC_2.rect, NPC_3.rect, NPC_4.rect, NPC_5.rect]
-    checks2 = [Player_1.rect, NPC_1.rect, NPC_2.rect, NPC_3.rect, NPC_4.rect, NPC_5.rect]
-
-    checks3 = [Player_1.rect, Player_2.rect, NPC_2.rect, NPC_3.rect, NPC_4.rect, NPC_5.rect]
-    checks4 = [Player_1.rect, Player_2.rect, NPC_1.rect, NPC_3.rect, NPC_4.rect, NPC_5.rect]
-    checks5 = [Player_1.rect, Player_2.rect, NPC_1.rect, NPC_2.rect, NPC_4.rect, NPC_5.rect]
-    checks6 = [Player_1.rect, Player_2.rect, NPC_1.rect, NPC_2.rect, NPC_3.rect, NPC_5.rect]
-    checks7 = [Player_1.rect, Player_2.rect, NPC_1.rect, NPC_2.rect, NPC_3.rect, NPC_4.rect]
-
     '''Update the Players. positions of both players, shooting actions and creating bullets'''
-    Player_1.update(key, Bullets, checks1)
-    Player_2.update(key, Bullets, checks2)
+    Player_1.update(key, Bullets, Characters)
+    Player_2.update(key, Bullets, Characters)
 
     '''Update the positions of all NPC's'''
-    NPC_1.npc_movement(NPC_1.get_closest_player(Player_1, Player_2), checks3)
-    NPC_2.npc_movement(NPC_2.get_closest_player(Player_1, Player_2), checks4)
-    NPC_3.npc_movement(NPC_3.get_closest_player(Player_1, Player_2), checks5)
-    NPC_4.npc_movement(NPC_4.get_closest_player(Player_1, Player_2), checks6)
-    NPC_5.npc_movement(NPC_5.get_closest_player(Player_1, Player_2), checks7)
+    NPC_1.update(key, Bullets, Characters)
+    NPC_2.update(key, Bullets, Characters)
+    NPC_3.update(key, Bullets, Characters)
+    NPC_4.update(key, Bullets, Characters)
+    NPC_5.update(key, Bullets, Characters)
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
