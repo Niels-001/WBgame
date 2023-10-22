@@ -202,19 +202,19 @@ class Character(pygame.sprite.Sprite):
         for character in characters:
             if character != self:
                 if self.rect.colliderect(character.rect):
-                    if (self.rect.center[0] >= character.rect.center[0] - character.size and x > 0
+                    if (self.rect.center[0] >= character.rect.center[0] - character.size
                             and (self.rect.center[1] >= character.rect.center[1] - character.size
                                  or self.rect.center[1] <= character.rect.center[1] + character.size)):
                         x = 0
-                    elif (self.rect.center[0] <= character.rect.center[0] + character.size and x < 0
+                    elif (self.rect.center[0] <= character.rect.center[0] + character.size
                             and (self.rect.center[1] >= character.rect.center[1] - character.size
                                  or self.rect.center[1] <= character.rect.center[1] + character.size)):
                         x = 0
-                    elif (self.rect.center[1] >= character.rect.center[1] - character.size and y > 0
+                    elif (self.rect.center[1] >= character.rect.center[1] - character.size
                             and (self.rect.center[0] >= character.rect.center[0] - character.size
                                  or self.rect.center[0] <= character.rect.center[0] + character.size)):
                         y = 0
-                    elif (self.rect.center[1] <= character.rect.center[1] + character.size and y < 0
+                    elif (self.rect.center[1] <= character.rect.center[1] + character.size
                             and (self.rect.center[0] >= character.rect.center[0] - character.size
                                  or self.rect.center[0] <= character.rect.center[0] + character.size)):
                         y = 0
