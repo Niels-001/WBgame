@@ -1,6 +1,7 @@
 """Imports of important python libraries"""
 import pygame  # for the UI, game mechanics and event handling
 import Object_setup as Ob  # importing the setup file we made ourselves
+import random
 
 '''Initiating pygame'''
 pygame.init()
@@ -18,7 +19,6 @@ pygame.display.set_caption("BoxHead")
 
 '''Creating a sprite groups for: the player and NPC objects, assets and guns, '''
 Characters = pygame.sprite.Group()
-
 
 '''Creating a sprite group for Bullets '''
 Bullets = pygame.sprite.Group()
@@ -45,9 +45,10 @@ while run:
     clock.tick(FPS)
     screen.fill("beige")
 
-    '''Drawing players and NPC's'''
+    '''Drawing players and NPC's, adding new npcs '''
+    if len(list(Characters))<7:
+        Characters.add(Ob.Character((200, 200, random.randint(0,200)), player=0))
     Characters.draw(screen)
-
 
     '''Drawing all bullets and updating there movement'''
     for Bullet in Bullets:
@@ -59,15 +60,17 @@ while run:
     key = pygame.key.get_pressed()  # Calling a built-in function that checks for any keys being pressed
 
     '''Update the Players. positions of both players, shooting actions and creating bullets'''
-    Player_1.update(key, Bullets, Characters)
-    Player_2.update(key, Bullets, Characters)
-
-    '''Update the positions of all NPC's'''
-    NPC_1.update(key, Bullets, Characters)
-    NPC_2.update(key, Bullets, Characters)
-    NPC_3.update(key, Bullets, Characters)
-    NPC_4.update(key, Bullets, Characters)
-    NPC_5.update(key, Bullets, Characters)
+    for character in Characters:
+        character.update(key, Bullets, Characters)
+    # Player_1.update(key, Bullets, Characters)
+    # Player_2.update(key, Bullets, Characters)
+    #
+    # '''Update the positions of all NPC's'''
+    # NPC_1.update(key, Bullets, Characters)
+    # NPC_2.update(key, Bullets, Characters)
+    # NPC_3.update(key, Bullets, Characters)
+    # NPC_4.update(key, Bullets, Characters)
+    # NPC_5.update(key, Bullets, Characters)
 
     '''Bails out of the game loop if the user closes the application'''
     for event in pygame.event.get():
